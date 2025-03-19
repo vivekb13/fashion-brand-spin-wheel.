@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Brand Lucky Spin</title>
+    <style>
+        body { text-align: center; font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #ff9a9e, #fad0c4); margin: 0; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
+        .hidden { display: none; }
+        #emailForm, #wheelPage { background: white; padding: 30px; border-radius: 15px; box-shadow: 0px 5px 15px rgba(0,0,0,0.2); width: 90%; max-width: 400px; margin: auto; text-align: center; }
+        h2 { color: #333; font-weight: bold; }
+        input { width: 90%; padding: 12px; margin: 15px 0; border: 2px solid #ff4081; border-radius: 10px; font-size: 16px; outline: none; }
+        .btn { padding: 12px 20px; cursor: pointer; background: #ff4081; color: white; border: none; border-radius: 10px; font-size: 18px; transition: 0.3s; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
+        .btn:hover { background: #e6005c; }
+        #wheelContainer { display: flex; justify-content: center; align-items: center; height: 400px; position: relative; }
+        #wheel { width: 320px; height: 320px; border-radius: 50%; position: relative; background: conic-gradient(
+            #ff6384 0deg 60deg, 
+            #36a2eb 60deg 120deg, 
+            #ffcd56 120deg 180deg, 
+            #4bc0c0 180deg 240deg, 
+            #9966ff 240deg 300deg, 
+            #ff9f40 300deg 360deg
+        ); display: flex; justify-content: center; align-items: center; transition: transform 3s ease-out; }
+        #wheel::before { content: 'Spin & Win!'; position: absolute; color: white; font-size: 20px; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); text-shadow: 2px 2px 5px rgba(0,0,0,0.2); }
+        #pointer { width: 30px; height: 40px; background: red; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); box-shadow: 0px 4px 10px rgba(0,0,0,0.3); }
+        #result { font-size: 20px; font-weight: bold; color: #333; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div id="emailForm">
+        <h2>Enter Your Email for a Chance to Win!</h2>
+        <input type="email" id="email" placeholder="Enter email" required>
+        <button class="btn" onclick="collectEmail()">Submit</button>
+    </div>
+    
+    <div id="wheelPage" class="hidden">
+        <h2>Spin the Wheel for Exclusive Offers!</h2>
+        <div id="wheelContainer">
+            <div id="wheel">
+                <div id="pointer"></div>
+            </div>
+        </div>
+        <button class="btn" onclick="spinWheel()">Spin</button>
+        <p id="result"></p>
+    </div>
+    
+    <script>
+        function collectEmail() {
+            let email = document.getElementById('email').value;
+            if(email) {
+                fetch('https://script.google.com/macros/s/AKfycbxeAfOaSmoiFJpRYRrAPQxHIPzkCvKfh199anPJHgjicu5OBUtDuPqaQrvCYiJBzdn2/exec', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `email=${encodeURIComponent(email)}`
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                    document.getElementById('emailForm').classList.add('hidden');
+                    document.getElementById('wheelPage').classList.remove('hidden');
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                alert('Please enter a valid email');
+            }
+        }
+
+        function spinWheel() {
+            let wheel = document.getElementById('wheel');
+            let degrees = Math.floor(Math.random() * 360) + 1800; 
+            wheel.style.transform = `rotate(${degrees}deg)`;
+            
+            setTimeout(() => {
+                let finalPos = degrees % 360;
+                let rewards = ['10% Off', 'Free Shipping', 'Buy 1 Get 1', 'No Prize', 'Gift Card', 'Exclusive Deal'];
+                let result = rewards[Math.floor(finalPos / 60)];
+                document.getElementById('result').innerText = `You won: ${result}!`;
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
